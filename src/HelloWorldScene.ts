@@ -14,6 +14,8 @@ export default class HelloWorldScene extends Phaser.Scene {
 	private scoreText!: Phaser.GameObjects.Text
 	private gameOver = false
 
+	private extraJumps = 1
+
 	constructor() {
 		super('hello-world')
 	}
@@ -150,8 +152,12 @@ export default class HelloWorldScene extends Phaser.Scene {
 			this.player.anims.play('turn');
 		}
 
-		if (this.cursors.up.isDown && this.player.body.touching.down) {
-			this.player.setVelocityY(-330);
+		if (this.cursors.up.isDown) {
+			if (this.player.body.touching.down) {
+				this.player.setVelocityY(-330)
+			} else if (this.extraJumps > 0) {
+				this.player.setVelocityY(-330)
+			}
 		}
 	}
 }
