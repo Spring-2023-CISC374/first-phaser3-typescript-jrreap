@@ -8,6 +8,7 @@ export default class HelloWorldScene extends Phaser.Scene {
 	private player!: Phaser.Physics.Arcade.Sprite
 	private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
 	private stars!: Phaser.Physics.Arcade.Group
+	private gems!: Phaser.Physics.Arcade.Group
 	private bombs!: Phaser.Physics.Arcade.Group
 
 	private score = 0
@@ -44,6 +45,30 @@ export default class HelloWorldScene extends Phaser.Scene {
 		}
 	}
 
+	private collectGem(p: Phaser.GameObjects.GameObject, s: Phaser.GameObjects.GameObject) {
+		const star = s as Phaser.Physics.Arcade.Image
+		const player = p as Phaser.Physics.Arcade.Sprite
+		star.disableBody(true, true);
+
+		this.score += 50;
+		this.scoreText.setText('Score: ' + this.score);
+
+		if (this.gems.countActive(true) === 0) {
+			this.gems.children.iterate(function (c) {
+				const child = c as Phaser.Physics.Arcade.Image
+				child.enableBody(true, child.x, 0, true, true);
+
+			})
+
+			let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+			let bomb = this.bombs.create(x, 16, 'bomb');
+			bomb.setBounce(1);
+			bomb.setCollideWorldBounds(true);
+			bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+		}
+	}
+
 	private hitBomb(p: Phaser.GameObjects.GameObject, b: Phaser.GameObjects.GameObject) {
 		this.physics.pause();
 
@@ -61,6 +86,7 @@ export default class HelloWorldScene extends Phaser.Scene {
 		this.load.image('sky', 'assets/sky.png');
 		this.load.image('ground', 'assets/platform.png');
 		this.load.image('star', 'assets/coin.png');
+		this.load.image('gem', 'assets/gem.png')
 		this.load.image('bomb', 'assets/bomb.png');
 		this.load.spritesheet('dude',
 			'assets/dude.png',
@@ -112,11 +138,19 @@ export default class HelloWorldScene extends Phaser.Scene {
 
 		this.cursors = this.input.keyboard.createCursorKeys();
 
+
 		this.stars = this.physics.add.group({
 			key: 'star',
-			repeat: 11,
-			setXY: { x: 12, y: 0, stepX: 70 }, 
+			repeat: 5,
+			setXY: { x: 12, y: 0, stepX: 140 }, 
 			setScale: { x: 0.15, y: 0.15}
+		})
+
+		this.gems = this.physics.add.group({
+			key: 'gem',
+			repeat: 5,
+			setXY: { x: 84, y: 0, stepX: 140 }, 
+			setScale: { x: 0.10, y: 0.10}
 		})
 
 		this.stars.children.iterate(function (c) {
@@ -124,9 +158,16 @@ export default class HelloWorldScene extends Phaser.Scene {
 			child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
 		})
 
-		this.physics.add.collider(this.stars, this.platforms)
+		this.gems.children.iterate(function (c) {
+			const child = c as Phaser.Physics.Arcade.Image
+			child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+		})
 
-		this.physics.add.overlap(this.player, this.stars, this.collectStar, undefined, this);
+		this.physics.add.collider(this.stars, this.platforms)
+		this.physics.add.collider(this.gems, this.platforms)
+
+		this.physics.add.overlap(this.player, this.stars, this.collectStar, undefined, this)
+		this.physics.add.overlap(this.player, this.gems, this.collectGem, undefined, this)
 
 		this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', color: '#000' });
 
