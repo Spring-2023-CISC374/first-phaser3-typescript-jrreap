@@ -89,8 +89,8 @@ export default class HelloWorldScene extends Phaser.Scene {
 		this.load.image('gem', 'assets/gem.png')
 		this.load.image('bomb', 'assets/bomb.png');
 		this.load.spritesheet('dude',
-			'assets/dude.png',
-			{ frameWidth: 32, frameHeight: 48 }
+			'assets/gawain.png',
+			{ frameWidth: 32, frameHeight: 32 }
 		);
 	}
 
@@ -110,12 +110,14 @@ export default class HelloWorldScene extends Phaser.Scene {
 		this.player = this.physics.add.sprite(100, 450, 'dude')
 		this.player.setBounce(0.2)
 		this.player.setCollideWorldBounds(true)
+		this.player.setScale(2, 2)
+		this.player.setBodySize(16, 24)
 
 		this.anims.create({
-			key: 'left',
+			key: 'right',
 			frames: this.anims.generateFrameNumbers('dude', {
-				start: 0,
-				end: 3
+				start: 8,
+				end: 11
 			}),
 			frameRate: 10,
 			repeat: -1
@@ -123,13 +125,17 @@ export default class HelloWorldScene extends Phaser.Scene {
 
 		this.anims.create({
 			key: 'turn',
-			frames: [{ key: 'dude', frame: 4 }],
-			frameRate: 20
+			frames: this.anims.generateFrameNumbers('dude', {
+				start: 0,
+				end: 3
+			}),
+			frameRate: 10,
+			repeat: -1
 		});
 
 		this.anims.create({
-			key: 'right',
-			frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+			key: 'left',
+			frames: this.anims.generateFrameNumbers('dude', { start: 12, end: 15 }),
 			frameRate: 10,
 			repeat: -1
 		});
