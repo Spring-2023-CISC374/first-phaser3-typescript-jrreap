@@ -60,7 +60,7 @@ export default class HelloWorldScene extends Phaser.Scene {
 	preload() {
 		this.load.image('sky', 'assets/sky.png');
 		this.load.image('ground', 'assets/platform.png');
-		this.load.image('star', 'assets/star.png');
+		this.load.image('star', 'assets/coin.png');
 		this.load.image('bomb', 'assets/bomb.png');
 		this.load.spritesheet('dude',
 			'assets/dude.png',
@@ -115,7 +115,8 @@ export default class HelloWorldScene extends Phaser.Scene {
 		this.stars = this.physics.add.group({
 			key: 'star',
 			repeat: 11,
-			setXY: { x: 12, y: 0, stepX: 70 }
+			setXY: { x: 12, y: 0, stepX: 70 }, 
+			setScale: { x: 0.15, y: 0.15}
 		})
 
 		this.stars.children.iterate(function (c) {
